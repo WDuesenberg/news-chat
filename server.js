@@ -27,7 +27,7 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // Connect to the Mongo DB
-mongoose.connect("mongodb://localhost/unit18Populater", { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect("mongolab-cubic-34146", { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Routes
 
