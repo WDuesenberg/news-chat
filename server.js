@@ -27,7 +27,7 @@ app.use(express.json());
 app.use(express.static("public"));
 
 // Connect to the Mongo DB
-mongoose.connect("mongolab-cubic-34146", { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect("mongodb://localhost/unit18Populater", { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Routes
 
@@ -47,14 +47,14 @@ app.get("/scrape", function(req, res) {
       // Add the text and href of every link, and save them as properties of the result object
       result.title = $(this)
         .find("a")
-        .text();
+        .attr();
         // .attr("title");
       result.link = $(this)
         .find("a")
         .attr("href");
-      result.img = $(this)
-        .find("a")
-        .attr("img")
+      result.summary = $(this)
+        .find("p")
+        .text();
       // Create a new Article using the `result` object built from scraping
       db.Article.create(result)
         .then(function(dbArticle) {
