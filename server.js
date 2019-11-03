@@ -1,7 +1,7 @@
 var express = require("express");
 var logger = require("morgan");
 var mongoose = require("mongoose");
-
+var expHbs = require("express-handlebars");
 // Our scraping tools
 // Axios is a promised-based http library, similar to jQuery's Ajax method
 // It works on the client and on the server
@@ -25,36 +25,44 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // Make public a static folder
 app.use(express.static("public"));
+app.engine("handlebars", expHbs({defaultLayout: "main"}));
+app.set("view engine", "handlebars");
 
 // Connect to the Mongo DB
 mongoose.connect("mongodb://localhost/unit18Populater", { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Routes
 
-// A GET route for scraping the politico website
+// A GET route for scraping the westword website
 app.get("/scrape", function(req, res) {
   // First, we grab the body of the html with axios
-  axios.get("https://www.politico.com/news/2020-elections").then(function(response) {
+  axios.get("https://www.westword.com/").then(function(response) {
     // Then, we load that into cheerio and save it to $ for a shorthand selector
     var $ = cheerio.load(response.data);
+    var result = {};
 
     // Now, we grab every h2 within an article tag, and do the following:
-    $("article").each(function(i, element) {
+    $("li").each(function(i, element) {
       // Save an empty result object
-      var result = {};
-      console.log(element);
+      var headline = $(element).find("div.headline").children("a").text()
+      console.log(headline);
+
+      var link = $(element).find("div.headline").children("a").attr("href")
+      console.log(link);
+
+      var image = $(element).find("img.lazy").attr("data-original")
+      console.log(image);
 
       // Add the text and href of every link, and save them as properties of the result object
-      result.title = $(this)
-        .find("a")
-        .text();
+      result.title = headline
+        // .find("a")
         // .attr("title");
-      result.link = $(this)
-        .find("a")
-        .attr("href");
-      result.summary = $(this)
-        .find("p")
-        .text("");
+      result.link = link
+      //   .find("a")
+      //   .attr("href");
+      result.image = image
+      //   .find("p")
+      //   .text("");
       // Create a new Article using the `result` object built from scraping
       db.Article.create(result)
         .then(function(dbArticle) {
@@ -68,7 +76,7 @@ app.get("/scrape", function(req, res) {
     });
 
     // Send a message to the client
-    res.send("Scrape Complete");
+    res.redirect("/");
   });
 });
 
@@ -120,6 +128,12 @@ app.post("/articles/:id", function(req, res) {
     })
 });
 
+app.get("/", function(req, res) {
+  db.Article.find({}).then(function(data) {
+    res.render("index", {articles: data})
+  })
+  // res.render("index");
+})
 // Start the server
 app.listen(PORT, function() {
   console.log("App running on port " + PORT + "!");
