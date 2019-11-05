@@ -2,6 +2,6 @@
 
 module.exports = {
     Article: require("./Articles"),
-    Note: require("./Note")
+    Note: require("./Notes")
   };
 // Fixed Capitalization Error  
