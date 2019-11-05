@@ -4,4 +4,4 @@ module.exports = {
     Article: require("./Article"),
     Note: require("./Note")
   };
-  
+// Fixed Capitalization Error  
