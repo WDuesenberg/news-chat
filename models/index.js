@@ -1,7 +1,7 @@
 // Exporting an object containing all of our models
 
 module.exports = {
-    Article: require("./Article"),
+    Article: require("./Articles"),
     Note: require("./Note")
   };
 // Fixed Capitalization Error  
